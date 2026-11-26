@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tour Guide Portal — TOURISTMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles/main.css">
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">🌍 TOURISTMO — Tour Guide Portal</a>
+            <div class="ms-auto">
+                <span class="text-white me-3" id="user-greeting">Welcome, Guide</span>
+                <button class="btn btn-outline-light btn-sm" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm p-4 bg-success text-white">
+                    <h2>Tour Guide Portal</h2>
+                    <p class="mb-0">View assigned tour bookings and manage tour schedules.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm p-4">
+                    <h4 class="mb-3">Assigned Tour Bookings</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Tourist</th>
+                                    <th>Package</th>
+                                    <th>Participants</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guide-bookings-tbody">
+                                <tr><td colspan="6" class="text-center">Loading assigned bookings...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('touristmo_token');
+            const role = localStorage.getItem('touristmo_role');
+            const user = JSON.parse(localStorage.getItem('touristmo_user') || '{}');
+
+            if (!token || role !== 'tour_guide') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('user-greeting').innerText = `Welcome, ${user.name || 'Tour Guide'}!`;
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            });
+
+            try {
+                const bookRes = await apiRequest('/bookings', 'GET', null, true);
+                const bookTbody = document.getElementById('guide-bookings-tbody');
+                if (bookRes.data && bookRes.data.length > 0) {
+                    bookTbody.innerHTML = bookRes.data.map(b => `
+                        <tr>
+                            <td>#${b.booking_id}</td>
+                            <td>${b.tourist_first_name} ${b.tourist_last_name} (${b.tourist_email})</td>
+                            <td>${b.package_title}</td>
+                            <td>${b.participants_count}</td>
+                            <td><span class="badge bg-${b.status === 'Confirmed' ? 'success' : 'warning'}">${b.status}</span></td>
+                            <td>${b.created_at.split('T')[0]}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    bookTbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No assigned bookings found.</td></tr>';
+                }
+            } catch (err) {
+                console.error('Error loading guide bookings:', err);
+            }
+        });
+    </script>
+</body>
+</html>

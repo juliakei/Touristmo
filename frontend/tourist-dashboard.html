@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourist Portal — TOURISTMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles/main.css">
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">🌍 TOURISTMO — Tourist Portal</a>
+            <div class="ms-auto">
+                <span class="text-white me-3" id="user-greeting">Welcome</span>
+                <button class="btn btn-outline-light btn-sm" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm p-4 bg-primary text-white">
+                    <h2>Tourist Dashboard</h2>
+                    <p class="mb-0">Browse packages, create bookings, and view your reservation & payment history.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <div class="card shadow-sm p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">My Bookings</h4>
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#newBookingModal">New Booking</button>
+                    </div>
+                    <div id="bookings-alert"></div>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle" id="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Package</th>
+                                    <th>Participants</th>
+                                    <th>Total Price</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookings-tbody">
+                                <tr><td colspan="7" class="text-center">Loading bookings...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm p-4">
+                    <h4 class="mb-3">My Payments</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle" id="payments-table">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Booking ID</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-tbody">
+                                <tr><td colspan="6" class="text-center">Loading payments...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- New Booking Modal -->
+    <div class="modal fade" id="newBookingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-booking-form">
+                        <div class="mb-3">
+                            <label for="packageSelect" class="form-label">Select Package</label>
+                            <select class="form-select" id="packageSelect" required>
+                                <option value="">Loading packages...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="participantsCount" class="form-label">Number of Participants</label>
+                            <input type="number" class="form-control" id="participantsCount" min="1" value="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Complete Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="payment-form">
+                        <input type="hidden" id="payBookingId">
+                        <div class="mb-3">
+                            <label class="form-label">Amount ($)</label>
+                            <input type="text" class="form-control" id="payAmount" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Payment Method</label>
+                            <select class="form-select" id="paymentMethod" required>
+                                <option value="Credit Card">Credit Card</option>
+                                <option value="PayPal">PayPal</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Pay Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('touristmo_token');
+            const role = localStorage.getItem('touristmo_role');
+            const user = JSON.parse(localStorage.getItem('touristmo_user') || '{}');
+
+            if (!token || role !== 'tourist') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('user-greeting').innerText = `Welcome, ${user.name || 'Tourist'}!`;
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            });
+
+            async function loadData() {
+                try {
+                    // Load packages for modal
+                    const pkgRes = await apiRequest('/packages');
+                    const pkgSelect = document.getElementById('packageSelect');
+                    if (pkgRes.data && pkgRes.data.length > 0) {
+                        pkgSelect.innerHTML = pkgRes.data.map(p => `<option value="${p.package_id}" data-price="${p.price}">${p.title} ($${p.price})</option>`).join('');
+                    }
+
+                    // Load bookings
+                    const bookRes = await apiRequest('/bookings', 'GET', null, true);
+                    const bookTbody = document.getElementById('bookings-tbody');
+                    if (bookRes.data && bookRes.data.length > 0) {
+                        bookTbody.innerHTML = bookRes.data.map(b => `
+                            <tr>
+                                <td>#${b.booking_id}</td>
+                                <td>${b.package_title}</td>
+                                <td>${b.participants_count}</td>
+                                <td>$${b.total_price}</td>
+                                <td><span class="badge bg-${b.status === 'Confirmed' ? 'success' : b.status === 'Pending' ? 'warning' : 'danger'}">${b.status}</span></td>
+                                <td>${b.created_at.split('T')[0]}</td>
+                                <td>
+                                    ${b.status === 'Pending' ? `<button class="btn btn-sm btn-outline-success pay-btn" data-id="${b.booking_id}" data-amount="${b.total_price}">Pay</button>` : '<span class="text-muted small">Paid / Confirmed</span>'}
+                                </td>
+                            </tr>
+                        `).join('');
+
+                        document.querySelectorAll('.pay-btn').forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                document.getElementById('payBookingId').value = btn.getAttribute('data-id');
+                                document.getElementById('payAmount').value = btn.getAttribute('data-amount');
+                                new bootstrap.Modal(document.getElementById('paymentModal')).show();
+                            });
+                        });
+                    } else {
+                        bookTbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No bookings found.</td></tr>';
+                    }
+
+                    // Load payments
+                    const payRes = await apiRequest('/payments', 'GET', null, true);
+                    const payTbody = document.getElementById('payments-tbody');
+                    if (payRes.data && payRes.data.length > 0) {
+                        payTbody.innerHTML = payRes.data.map(p => `
+                            <tr>
+                                <td>#${p.payment_id}</td>
+                                <td>#${p.booking_id}</td>
+                                <td>$${p.amount}</td>
+                                <td>${p.payment_method}</td>
+                                <td><span class="badge bg-success">${p.payment_status}</span></td>
+                                <td>${p.transaction_date.split('T')[0]}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        payTbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No payments recorded.</td></tr>';
+                    }
+                } catch (err) {
+                    console.error('Error loading tourist data:', err);
+                }
+            }
+
+            loadData();
+
+            // Handle new booking
+            document.getElementById('new-booking-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const packageId = document.getElementById('packageSelect').value;
+                const participantsCount = document.getElementById('participantsCount').value;
+
+                try {
+                    await apiRequest('/bookings', 'POST', { packageId, participantsCount }, true);
+                    bootstrap.Modal.getInstance(document.getElementById('newBookingModal')).hide();
+                    loadData();
+                    alert('Booking created successfully!');
+                } catch (err) {
+                    alert('Failed to create booking: ' + err.message);
+                }
+            });
+
+            // Handle payment
+            document.getElementById('payment-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const bookingId = document.getElementById('payBookingId').value;
+                const amount = document.getElementById('payAmount').value;
+                const paymentMethod = document.getElementById('paymentMethod').value;
+
+                try {
+                    await apiRequest('/payments', 'POST', { bookingId, amount, paymentMethod }, true);
+                    bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+                    loadData();
+                    alert('Payment processed successfully! Booking confirmed.');
+                } catch (err) {
+                    alert('Payment failed: ' + err.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

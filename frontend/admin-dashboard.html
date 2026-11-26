@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — TOURISTMO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles/main.css">
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">🌍 TOURISTMO — Admin Dashboard</a>
+            <div class="ms-auto">
+                <span class="text-white me-3" id="user-greeting">Welcome, Admin</span>
+                <button class="btn btn-outline-light btn-sm" id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm p-4 bg-dark text-white">
+                    <h2>Administrator Management Portal</h2>
+                    <p class="mb-0">Manage destinations, tour packages, tour guides, view all bookings & payment records.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Tabs -->
+        <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="destinations-tab" data-bs-toggle="tab" data-bs-target="#destinations-pane" type="button">Destinations</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="packages-tab" data-bs-toggle="tab" data-bs-target="#packages-pane" type="button">Packages</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="guides-tab" data-bs-toggle="tab" data-bs-target="#guides-pane" type="button">Tour Guides</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings-pane" type="button">Bookings</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments-pane" type="button">Payments</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabsContent">
+            <!-- Destinations Pane -->
+            <div class="tab-pane fade show active" id="destinations-pane">
+                <div class="card shadow-sm p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Manage Destinations</h4>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDestinationModal">Add Destination</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Location</th>
+                                    <th>Price Guide</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-destinations-tbody">
+                                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packages Pane -->
+            <div class="tab-pane fade" id="packages-pane">
+                <div class="card shadow-sm p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Manage Tour Packages</h4>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPackageModal">Add Package</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Destination</th>
+                                    <th>Price</th>
+                                    <th>Duration</th>
+                                    <th>Start Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-packages-tbody">
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tour Guides Pane -->
+            <div class="tab-pane fade" id="guides-pane">
+                <div class="card shadow-sm p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>Manage Tour Guides</h4>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addGuideModal">Register Guide</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Specialization</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-guides-tbody">
+                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Pane -->
+            <div class="tab-pane fade" id="bookings-pane">
+                <div class="card shadow-sm p-4">
+                    <h4 class="mb-3">All System Bookings</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tourist</th>
+                                    <th>Package</th>
+                                    <th>Participants</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-bookings-tbody">
+                                <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Pane -->
+            <div class="tab-pane fade" id="payments-pane">
+                <div class="card shadow-sm p-4">
+                    <h4 class="mb-3">All Payment Records</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Booking ID</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-payments-tbody">
+                                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Destination Modal -->
+    <div class="modal fade" id="addDestinationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Destination</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-destination-form">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" id="destName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="destDesc" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" id="destLocation" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price Guide ($)</label>
+                            <input type="number" step="0.01" class="form-control" id="destPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Image URL</label>
+                            <input type="url" class="form-control" id="destImage">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Destination</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Package Modal -->
+    <div class="modal fade" id="addPackageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Tour Package</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-package-form">
+                        <div class="mb-3">
+                            <label class="form-label">Destination</label>
+                            <select class="form-select" id="pkgDestinationId" required>
+                                <option value="">Loading destinations...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" id="pkgTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="pkgDesc" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price ($)</label>
+                            <input type="number" step="0.01" class="form-control" id="pkgPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Duration (Days)</label>
+                            <input type="number" class="form-control" id="pkgDuration" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Max Participants</label>
+                            <input type="number" class="form-control" id="pkgMaxParticipants" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="pkgStartDate" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Create Package</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Guide Modal -->
+    <div class="modal fade" id="addGuideModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register Tour Guide</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-guide-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="guideFirstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="guideLastName" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="guideEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="guidePassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="guidePhone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Specialization</label>
+                            <input type="text" class="form-control" id="guideSpecialization">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" id="guideBio" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Register Guide</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('touristmo_token');
+            const role = localStorage.getItem('touristmo_role');
+
+            if (!token || role !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            });
+
+            async function loadAdminData() {
+                try {
+                    // Destinations
+                    const destRes = await apiRequest('/destinations');
+                    const destTbody = document.getElementById('admin-destinations-tbody');
+                    const pkgDestSelect = document.getElementById('pkgDestinationId');
+                    if (destRes.data && destRes.data.length > 0) {
+                        destTbody.innerHTML = destRes.data.map(d => `
+                            <tr>
+                                <td>#${d.destination_id}</td>
+                                <td>${d.name}</td>
+                                <td>${d.location}</td>
+                                <td>$${d.price_guide}</td>
+                                <td><button class="btn btn-sm btn-outline-danger delete-dest-btn" data-id="${d.destination_id}">Delete</button></td>
+                            </tr>
+                        `).join('');
+
+                        pkgDestSelect.innerHTML = destRes.data.map(d => `<option value="${d.destination_id}">${d.name}</option>`).join('');
+
+                        document.querySelectorAll('.delete-dest-btn').forEach(btn => {
+                            btn.addEventListener('click', async () => {
+                                if (confirm('Are you sure you want to delete this destination?')) {
+                                    await apiRequest(`/destinations/${btn.getAttribute('data-id')}`, 'DELETE', null, true);
+                                    loadAdminData();
+                                }
+                            });
+                        });
+                    } else {
+                        destTbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No destinations found.</td></tr>';
+                    }
+
+                    // Packages
+                    const pkgRes = await apiRequest('/packages');
+                    const pkgTbody = document.getElementById('admin-packages-tbody');
+                    if (pkgRes.data && pkgRes.data.length > 0) {
+                        pkgTbody.innerHTML = pkgRes.data.map(p => `
+                            <tr>
+                                <td>#${p.package_id}</td>
+                                <td>${p.title}</td>
+                                <td>${p.destination_name}</td>
+                                <td>$${p.price}</td>
+                                <td>${p.duration_days} Days</td>
+                                <td>${p.start_date.split('T')[0]}</td>
+                                <td><button class="btn btn-sm btn-outline-danger delete-pkg-btn" data-id="${p.package_id}">Delete</button></td>
+                            </tr>
+                        `).join('');
+
+                        document.querySelectorAll('.delete-pkg-btn').forEach(btn => {
+                            btn.addEventListener('click', async () => {
+                                if (confirm('Are you sure you want to delete this package?')) {
+                                    await apiRequest(`/packages/${btn.getAttribute('data-id')}`, 'DELETE', null, true);
+                                    loadAdminData();
+                                }
+                            });
+                        });
+                    } else {
+                        pkgTbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No packages found.</td></tr>';
+                    }
+
+                    // Guides
+                    const guideRes = await apiRequest('/tour-guides');
+                    const guideTbody = document.getElementById('admin-guides-tbody');
+                    if (guideRes.data && guideRes.data.length > 0) {
+                        guideTbody.innerHTML = guideRes.data.map(g => `
+                            <tr>
+                                <td>#${g.guide_id}</td>
+                                <td>${g.first_name} ${g.last_name}</td>
+                                <td>${g.email}</td>
+                                <td>${g.specialization || 'General'}</td>
+                                <td><span class="badge bg-${g.status === 'Active' ? 'success' : 'secondary'}">${g.status}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-${g.status === 'Active' ? 'warning' : 'success'} toggle-guide-btn" data-id="${g.guide_id}" data-status="${g.status === 'Active' ? 'Inactive' : 'Active'}">
+                                        ${g.status === 'Active' ? 'Deactivate' : 'Activate'}
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('');
+
+                        document.querySelectorAll('.toggle-guide-btn').forEach(btn => {
+                            btn.addEventListener('click', async () => {
+                                await apiRequest(`/tour-guides/${btn.getAttribute('data-id')}/status`, 'PATCH', { status: btn.getAttribute('data-status') }, true);
+                                loadAdminData();
+                            });
+                        });
+                    } else {
+                        guideTbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No guides found.</td></tr>';
+                    }
+
+                    // Bookings
+                    const bookRes = await apiRequest('/bookings', 'GET', null, true);
+                    const bookTbody = document.getElementById('admin-bookings-tbody');
+                    if (bookRes.data && bookRes.data.length > 0) {
+                        bookTbody.innerHTML = bookRes.data.map(b => `
+                            <tr>
+                                <td>#${b.booking_id}</td>
+                                <td>${b.tourist_first_name} ${b.tourist_last_name}</td>
+                                <td>${b.package_title}</td>
+                                <td>${b.participants_count}</td>
+                                <td>$${b.total_price}</td>
+                                <td><span class="badge bg-${b.status === 'Confirmed' ? 'success' : b.status === 'Pending' ? 'warning' : 'danger'}">${b.status}</span></td>
+                                <td>
+                                    <select class="form-select form-select-sm booking-status-select" data-id="${b.booking_id}">
+                                        <option value="Pending" ${b.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="Confirmed" ${b.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                                        <option value="Cancelled" ${b.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        `).join('');
+
+                        document.querySelectorAll('.booking-status-select').forEach(sel => {
+                            sel.addEventListener('change', async () => {
+                                await apiRequest(`/bookings/${sel.getAttribute('data-id')}/status`, 'PATCH', { status: sel.value }, true);
+                                loadAdminData();
+                            });
+                        });
+                    } else {
+                        bookTbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No bookings found.</td></tr>';
+                    }
+
+                    // Payments
+                    const payRes = await apiRequest('/payments', 'GET', null, true);
+                    const payTbody = document.getElementById('admin-payments-tbody');
+                    if (payRes.data && payRes.data.length > 0) {
+                        payTbody.innerHTML = payRes.data.map(p => `
+                            <tr>
+                                <td>#${p.payment_id}</td>
+                                <td>#${p.booking_id}</td>
+                                <td>$${p.amount}</td>
+                                <td>${p.payment_method}</td>
+                                <td><span class="badge bg-success">${p.payment_status}</span></td>
+                                <td>${p.transaction_date.split('T')[0]}</td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        payTbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No payments found.</td></tr>';
+                    }
+                } catch (err) {
+                    console.error('Error loading admin data:', err);
+                }
+            }
+
+            loadAdminData();
+
+            // Forms submission handlers
+            document.getElementById('add-destination-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('destName').value;
+                const description = document.getElementById('destDesc').value;
+                const location = document.getElementById('destLocation').value;
+                const priceGuide = document.getElementById('destPrice').value;
+                const imageUrl = document.getElementById('destImage').value;
+
+                try {
+                    await apiRequest('/destinations', 'POST', { name, description, location, priceGuide, imageUrl }, true);
+                    bootstrap.Modal.getInstance(document.getElementById('addDestinationModal')).hide();
+                    loadAdminData();
+                    alert('Destination created successfully!');
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+            });
+
+            document.getElementById('add-package-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const destinationId = document.getElementById('pkgDestinationId').value;
+                const title = document.getElementById('pkgTitle').value;
+                const description = document.getElementById('pkgDesc').value;
+                const price = document.getElementById('pkgPrice').value;
+                const durationDays = document.getElementById('pkgDuration').value;
+                const maxParticipants = document.getElementById('pkgMaxParticipants').value;
+                const startDate = document.getElementById('pkgStartDate').value;
+
+                try {
+                    await apiRequest('/packages', 'POST', { destinationId, title, description, price, durationDays, maxParticipants, startDate }, true);
+                    bootstrap.Modal.getInstance(document.getElementById('addPackageModal')).hide();
+                    loadAdminData();
+                    alert('Package created successfully!');
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+            });
+
+            document.getElementById('add-guide-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const firstName = document.getElementById('guideFirstName').value;
+                const lastName = document.getElementById('guideLastName').value;
+                const email = document.getElementById('guideEmail').value;
+                const password = document.getElementById('guidePassword').value;
+                const phone = document.getElementById('guidePhone').value;
+                const specialization = document.getElementById('guideSpecialization').value;
+                const bio = document.getElementById('guideBio').value;
+
+                try {
+                    await apiRequest('/tour-guides', 'POST', { firstName, lastName, email, password, phone, specialization, bio }, true);
+                    bootstrap.Modal.getInstance(document.getElementById('addGuideModal')).hide();
+                    loadAdminData();
+                    alert('Tour guide registered successfully!');
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

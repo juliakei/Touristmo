@@ -1,8 +1,9 @@
 # Nestjs specific
-/dist
-/node_modules
-/build
-/tmp
+dist/
+node_modules/
+build/
+tmp/
+*.tsbuildinfo
 
 # Logs
 logs
